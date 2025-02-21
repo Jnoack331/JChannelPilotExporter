@@ -1,0 +1,33 @@
+{
+    "name": "jnoack/channel-pilot-exporter",
+    "description": "jnoack/channel-pilot-exporter",
+    "type": "shopware-platform-plugin",
+    "version": "1.0.0",
+    "license": "MIT",
+    "require": {
+        "shopware/core": "~6.6.0",
+        "shopware/administration": "~6.6.0"
+    },
+    "extra": {
+        "shopware-plugin-class": "Jnoack\\JChannelPilotExporter\\JChannelPilotExporter",
+        "label": {
+            "de-DE": "Channel Pilot Exporter",
+            "en-GB": "Channel Pilot Exporter"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Jnoack\\JChannelPilotExporter\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Jnoack\\JChannelPilotExporter\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "symfony/runtime": true
+        }
+    }
+}
