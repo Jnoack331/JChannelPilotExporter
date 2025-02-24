@@ -40,6 +40,11 @@ tasks:
     cmds:
       -
 
+  clean:
+    cmds:
+      - $CONSOLE cache:clear
+
+
   export:
     cmds:
       - $CONSOLE j:channel_pilot:export

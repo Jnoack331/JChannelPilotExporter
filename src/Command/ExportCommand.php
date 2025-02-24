@@ -14,6 +14,10 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 ), AutoconfigureTag('console.command')]
 class ExportCommand extends Command
 {
+    public function __construct(?string $name = null)
+    {
+    }
+
     protected function configure(): void
     {
         $this->setDescription('Does something very special.');

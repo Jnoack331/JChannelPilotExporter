@@ -2,15 +2,25 @@
 
 namespace Jnoack\JChannelPilotExporter;
 
+use Jnoack\JChannelPilotExporter\DependencyInjection\ChannelPilotRouteScopeCompilerPass;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class JChannelPilotExporter extends Plugin
 {
+    public function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new ChannelPilotRouteScopeCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 100);
+    }
+
     public function install(InstallContext $installContext): void
     {
         // Do stuff such as creating a new payment method
