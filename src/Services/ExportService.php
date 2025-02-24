@@ -14,6 +14,7 @@ class ExportService implements ExportServiceInterface
     public function __construct(
         private readonly EntityRepository $productRepository,
         private readonly Connection $connection,
+        private readonly MappingService $mappingService,
     ) {
     }
 
@@ -30,21 +31,24 @@ SQL;
         
         $file = fopen('/var/www/html/custom/plugins/JChannelPilotExporter/test.csv', 'w');
 
+        $mapping = $this->mappingService->getMapping();
+
         $chunkLength = 100;
         foreach(array_chunk($allProductIds, $chunkLength) as $chunk) {
             /** @var EntitySearchResult $products */
             $criteria = new Criteria($chunk);
-            $criteria->addFields(['id', 'productNumber', 'name', 'description']);
+            $criteria->addFields($mapping);
 
             $products = $this->productRepository->search($criteria, Context::createCLIContext());
             /** @var PartialEntity $product */
             foreach ($products as $product) {
-                fputcsv($file, [
-                    "id" => $product->get('id'),
-                    "product_number" => $product->get('productNumber'),
-                    "name" => $product->get('name'),
-                    "description" => $product->get('description'),
-                ]);
+                $articleData = [];
+
+                foreach ($mapping as $field) {
+                    $articleData[$field] = $product->get($field);
+                }
+
+                fputcsv($file, $articleData);
             }
         }
 
