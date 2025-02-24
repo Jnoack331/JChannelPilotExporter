@@ -2,20 +2,26 @@
 
 namespace Jnoack\JChannelPilotExporter\Command;
 
+use Jnoack\JChannelPilotExporter\Services\ExportService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+use Symfony\Contracts\Service\Attribute\Required;
 
 #[AsCommand(
     name: 'j:channel_pilot:export',
     description: 'starts the channel pilot export',
-), AutoconfigureTag('console.command')]
+)]
 class ExportCommand extends Command
 {
-    public function __construct(?string $name = null)
-    {
+    protected ExportService $exportService;
+
+    #[Required]
+    public function setExportService(
+        ExportService $exportService,
+    ) {
+        $this->exportService = $exportService;
     }
 
     protected function configure(): void
@@ -25,8 +31,7 @@ class ExportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln('It works!');
-
+        $this->exportService->export();
         // Exit code 0 for success
         return 0;
     }

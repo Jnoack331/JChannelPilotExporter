@@ -6,12 +6,6 @@
 
     <services>
         <defaults autowire="true" autoconfigure="true" public="true"/>
-        <prototype namespace="Jnoack\JChannelPilotExporter\" resource="../../*"  exclude="../../**/Dev/**"/>
-
-        <service id="Jnoack\JChannelPilotExporter\Controller\ExportController" public="true">
-            <call method="setContainer">
-                <argument id="service_container" type="service"/>
-            </call>
-        </service>
+        <prototype namespace="Jnoack\JChannelPilotExporter\" resource="../../../**/Dev/*"/>
     </services>
 </container>

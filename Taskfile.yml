@@ -2,17 +2,24 @@ version: '3'
 
 env:
   CONSOLE: docker compose exec -it shopware ./bin/console
+  COMPOSER: docker compose exec -it shopware composer
 
 tasks:
   init:
     cmds:
       - task: start
+      - $COMPOSER install
+      - $COMPOSER require --dev fakerphp/faker
       - $CONSOLE plugin:refresh -s
       - $CONSOLE plugin:install -c -a JChannelpilotExporter
 
   console:
     cmds:
       - $CONSOLE {{.CLI_ARGS}}
+
+  composer:
+    cmds:
+      - $COMPOSER {{.CLI_ARGS}}
 
   start:
     cmds:
@@ -38,12 +45,11 @@ tasks:
 
   generate-fake-data:
     cmds:
-      -
+      - $CONSOLE j:channel_pilot:generate_fake_products
 
   clean:
     cmds:
       - $CONSOLE cache:clear
-
 
   export:
     cmds:

@@ -4,13 +4,14 @@ namespace Jnoack\JChannelPilotExporter;
 
 use Jnoack\JChannelPilotExporter\DependencyInjection\ChannelPilotRouteScopeCompilerPass;
 use Shopware\Core\Framework\Plugin;
-use Shopware\Core\Framework\Plugin\Context\ActivateContext;
-use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
-use Shopware\Core\Framework\Plugin\Context\InstallContext;
-use Shopware\Core\Framework\Plugin\Context\UninstallContext;
-use Shopware\Core\Framework\Plugin\Context\UpdateContext;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Loader\DelegatingLoader;
+use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\DirectoryLoader;
+use Symfony\Component\DependencyInjection\Loader\GlobFileLoader;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class JChannelPilotExporter extends Plugin
 {
@@ -18,47 +19,20 @@ class JChannelPilotExporter extends Plugin
     {
         parent::build($container);
 
-        $container->addCompilerPass(new ChannelPilotRouteScopeCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 100);
-    }
+        $locator = new FileLocator('Resources/config');
+        $resolver = new LoaderResolver([
+            new XmlFileLoader($container, $locator),
+            new GlobFileLoader($container, $locator),
+            new DirectoryLoader($container, $locator),
+        ]);
 
-    public function install(InstallContext $installContext): void
-    {
-        // Do stuff such as creating a new payment method
-    }
+        $configLoader = new DelegatingLoader($resolver);
+        $confDir = \rtrim($this->getPath(), '/') . '/Resources/config';
 
-    public function uninstall(UninstallContext $uninstallContext): void
-    {
-        parent::uninstall($uninstallContext);
-
-        if ($uninstallContext->keepUserData()) {
-            return;
+        if ($container->getParameter('kernel.environment') === 'dev') {
+            $configLoader->load($confDir . '/dev/*.xml', 'glob');
         }
 
-        // Remove or deactivate the data created by the plugin
-    }
-
-    public function activate(ActivateContext $activateContext): void
-    {
-        // Activate entities, such as a new payment method
-        // Or create new entities here, because now your plugin is installed and active for sure
-    }
-
-    public function deactivate(DeactivateContext $deactivateContext): void
-    {
-        // Deactivate entities, such as a new payment method
-        // Or remove previously created entities
-    }
-
-    public function update(UpdateContext $updateContext): void
-    {
-        // Update necessary stuff, mostly non-database related
-    }
-
-    public function postInstall(InstallContext $installContext): void
-    {
-    }
-
-    public function postUpdate(UpdateContext $updateContext): void
-    {
+        $container->addCompilerPass(new ChannelPilotRouteScopeCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 100);
     }
 }
